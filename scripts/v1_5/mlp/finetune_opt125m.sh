@@ -1,14 +1,14 @@
 #!/bin/bash
 
 deepspeed \
-    --include localhost:7 \
-    --master_port  9001\
+    --include localhost:0 \
+    --master_port  8002\
     llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
     --version opt \
-    --data_path ./playground/data/coco/coco_karpathy_train_conv_1Q.json \
-    --image_folder ./playground/data/coco \
+    --data_path ./data_root/coco/coco_karpathy_train_conv_1Q.json \
+    --image_folder ./data_root/coco \
     --vision_tower openai/clip-vit-large-patch14-336 \
     --pretrain_mm_adapter ./checkpoints/pretrained/opt-125m-4MLP4E/mm_projector.bin \
     --mm_projector_type mlp4x_bott4x_gelu \

@@ -37,14 +37,10 @@ from pycocotools.coco import COCO
 
 ds_collections = {
     'coco': {
-        'val': './playground/data/coco/gt_for_test/coco_karpathy_val_gt.json',
-        'test': './playground/data/coco/gt_for_test/coco_karpathy_test_gt.json',
-    },
-    'dci': {
-        'test': './playground/data/DCI/dci_test_gt.json',
+        'test': './data_root/COCO/coco_karpathy_test_gt.json',
     },
     'sharegpt': {
-        'test': './playground/data/DCI/sharegpt_dci_test_gt.json',
+        'test': './data_root/sharegpt/sharegpt_dci_test_gt.json',
     }
 }
 
@@ -60,8 +56,8 @@ class ModelArguments:
 @dataclass
 class DataArguments:
     query: str = field(default=None)
-    data_path: str = field(default="./playground/data/coco/dataset_coco.json")
-    image_folder: str = field(default="./playground/data/coco")
+    data_path: str = field(default="./data_root/COCO/coco_test_datalist.json")
+    image_folder: str = field(default="./data_root/coco")
     is_multimodal: bool = True
     mm_use_im_start_end: bool = field(default=False)
     image_aspect_ratio: str = field(default="pad") # 'square' 'pad'
@@ -169,8 +165,13 @@ def preprocess_captions(captions, tokenizer, data_path='coco'):
             caption = caption[len(tokenizer.bos_token):]
         if caption.endswith(tokenizer.eos_token):
             caption = caption[:-len(tokenizer.eos_token)]
-        # for the model finetuned on DCI, 
-        # if the caption has more than 3 sentences, use only up to 3 sentences
+        
+        # For models finetuned on DCI or ShareGPT data,
+        # use only the first 3 sentences of the caption.
+        # Detailed captions are compared using only the first 3 sentences.
+        # Note that without this preprocessing, captioning metrics for generalist models like LLaVA may drop.
+        # For example, longer predicted captions tend to lower CIDEr scores
+        # and increase the frequency of hallucinations in later sentences, which negatively impacts CAPTURE performance.
         if 'dci' in data_path or 'sharegpt' in data_path:
             sentences = caption.split('.')
             sentences = [s.strip() for s in caption.split('.') if s.strip()]

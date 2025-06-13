@@ -1,14 +1,14 @@
 #!/bin/bash
 
 deepspeed \
-    --include localhost:7 \
+    --include localhost:0 \
     --master_port  8001\
     llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
     --version plain \
-    --data_path ./playground/data/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
-    --image_folder ./playground/data/LLaVA-Pretrain/images \
+    --data_path ./data_root/LLaVA-Pretrain/blip_laion_cc_sbu_558k.json \
+    --image_folder ./data_root/LLaVA-Pretrain/images \
     --vision_tower openai/clip-vit-large-patch14-336 \
     --mm_projector_type mlp4x_bott4x_gelu \
     --tune_mm_mlp_adapter True \

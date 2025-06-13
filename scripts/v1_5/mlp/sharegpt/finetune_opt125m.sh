@@ -1,14 +1,14 @@
 #!/bin/bash
 
 deepspeed \
-    --include localhost:1 \
-    --master_port  9003\
+    --include localhost:0 \
+    --master_port  8003\
     llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
     --model_name_or_path facebook/opt-125m \
     --version opt \
-    --data_path ./playground/data/DCI/sharegpt_dci_train_conv.json \
-    --image_folder ./playground/data \
+    --data_path ./data_root/DCI/sharegpt_dci_train_conv.json \
+    --image_folder ./data_root \
     --vision_tower openai/clip-vit-large-patch14-336 \
     --pretrain_mm_adapter ./checkpoints/pretrained/opt-125m-4MLP4E/mm_projector.bin \
     --mm_projector_type mlp4x_bott4x_gelu \
